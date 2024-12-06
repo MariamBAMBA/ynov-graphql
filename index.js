@@ -49,29 +49,29 @@ const users = [
     id: "0",
     name: "Alice",
     email: "alice@example.com",
-    followers: ["zoe", "Sam", "Bob"],
-    following: ["Sam", "Bob"],
+    followers: ["1", "2"],
+    following: ["1"],
   },
   {
     id: "1",
     name: "Bob",
     email: "bob@example.com",
-    followers: ["Alice", "Zoe"],
-    following: ["zoe", "Sam"],
+    followers: ["0", "3"],
+    following: ["3", "2"],
   },
   {
     id: "2",
     name: "Sam",
     email: "sam@example.com",
-    followers: ["Alice", "Zoe"],
-    following: ["Alice", "Zoe", "Bob"],
+    followers: ["0", "3"],
+    following: ["0", "0", "1"],
   },
   {
     id: "3",
     name: "Zoe",
     email: "zoe@example.com",
-    followers: ["Alice", "Bob"],
-    following: ["Bob", "Sam"],
+    followers: ["0", "1"],
+    following: ["1", "2"],
   },
 ];
 
@@ -81,30 +81,34 @@ const posts = [
     title: "AliceLife",
     content: "Contenu sur la Vie de Alice",
     author: "0",
-    likes: ["Zoe", "Sam", "Bob"],
-    comments: ["Super !!"],
+    likes: ["3", "2", "1"],
+    comments: ["1"],
   },
 
   {
     id: "1",
     title: "BobJobs",
-    content: "Contenu sur le travail Alice",
-    author: "0",
-    likes: ["Zoe", "Alice"],
-    comments: ["Super !!"],
+    content: "Contenu sur le travail de bob",
+    author: "1",
+    likes: ["3", "0"],
+    comments: ["0"],
   },
 
   {
     id: "2",
     title: "Sammmm Family",
     content: "Contenu sur la Vie de Famille de Sam",
-    author: "0",
-    likes: ["Zoe", "Alice"],
-    comments: ["Super !!"],
+    author: "2",
+    likes: ["3", "0"],
+    comments: ["3"],
   },
 ];
 
-const comments = [];
+const comments = [
+  { id: "0", content: "Super !!", author: "1", post: "0" },
+  { id: "1", content: "Super boulot !!", author: "2", post: "1" },
+  { id: "2", content: "Sympa !!", author: "0", post: "2" },
+];
 
 // Résolveurs, les fonctions pour gerer les abonnemets, likes et commentaires
 
@@ -121,6 +125,7 @@ const root = {
     users.filter((user) =>
       user.name.toLowerCase().includes(name.toLowerCase())
     ),
+
   post: ({ id }) => {
     const post = posts.find((post) => post.id === id);
     if (post) {
@@ -128,7 +133,12 @@ const root = {
       post.likes = post.likes.map((likeId) =>
         users.find((user) => user.id === likeId)
       );
-      post.comments = comments.filter((comment) => comment.post === post.id);
+      post.comments = comments
+        .filter((comment) => comment.post === post.id)
+        .map((comment) => ({
+          ...comment,
+          author: users.find((user) => user.id === comment.author),
+        }));
     }
     return post;
   },
@@ -140,7 +150,12 @@ const root = {
       likes: post.likes.map((likeId) =>
         users.find((user) => user.id === likeId)
       ),
-      comments: comments.filter((comment) => comment.post === post.id),
+      comments: comments
+        .filter((comment) => comment.post === post.id)
+        .map((comment) => ({
+          ...comment,
+          author: users.find((user) => user.id === comment.author),
+        })),
     })),
 
   addPost: ({ title, content, authorId }) => {
