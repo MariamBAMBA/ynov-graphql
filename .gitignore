@@ -1,0 +1,19 @@
+# Node.js dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environnement
+.env
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+
+# IDE/éditeurs
+.vscode/
+.idea/
+*.swp
